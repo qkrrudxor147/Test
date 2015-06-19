@@ -4,24 +4,12 @@ def make_matrix(sx, sy):
 class l_table:
 
     def __init__(self, X, Y,gap,match,mismatch):
-        self.query_x = X
-        self.query_y = Y
+        self.query_x = "*"+X
+        self.query_y = "*"+Y
         self.query_g = gap
         self.query_m = match
         self.query_mi = mismatch
         self.testT = []
-
-    def make_init_T(self):
-        testL = []
-        for y in range(len(self.query_y)+1):
-            testL.append(y)
-        self.testT.append(testL)
-
-        for x in range(len(self.query_x)):
-            tmpL = [x+1]
-            for y in range(len(self.query_y)):
-                tmpL.append("")
-            self.testT.append(tmpL)
 
 
     def local_align(self):
@@ -49,21 +37,58 @@ class l_table:
 
             print stream.rstrip("\t")
 
-        return best, optloc
+        return optloc
 
-def main():
-    qX = raw_input("str1 : ")
-    qY = raw_input("str2 : ")
-    qg = raw_input("gap penalty: ")
-    qm = raw_input("match score: ")
-    qmi = raw_input("mismatch penalty: ")
 
-    print qX, qY, qg, qm, qmi
 
-    one = l_table(qX,qY,qg,qm,qmi)
+    
+    def search_near(self, sX, sY, pX, pY):
+#        print "second V"
+#        print self.testT[pX][pY]
+#        print self.query_x[pX-1]
+#        print self.query_y[pY-1]
 
-    one.make_init_T()
+#        print len(sX), len(sY)
+        if( pX == 0) and (pY == 0 ):
+#            sX += copy.deepcopy(self.query_x[pX-1])
+#            sY += copy.deepcopy(self.query_y[pY-1])
+            result = sX + "\n" + sY
+            print result
+        elif(pX == 0 ):
+            sX = "_" + sX
+            sY = copy.deepcopy(self.query_y[pY-1]) + sY
+            self.search_near(sX,sY,pX,pY-1)
+        elif(pY == 0) :
+            sX = copy.deepcopy(self.query_x[pX-1]) + sX
+            sY = "_" + sY
+            self.search_near(sX,sY,pX-1,pY)
+        else:
+            dia = self.testT[pX-1][pY-1]
+            left = self.testT[pX-1][pY]
+            up = self.testT[pX][pY-1]
+            if ( dia <= left ) and ( dia <=up):
+                sX = copy.deepcopy(self.query_x[pX-1]) + sX
+                sY = copy.deepcopy(self.query_y[pY-1]) + sY
 
-    print one.local_align()
+                self.search_near(sX,sY, pX-1, pY-1)
+            elif ( left < up):
+                sX = copy.deepcopy(self.query_x[pX-1]) + sX
+                sY = "_" + sY
+                self.search_near(sX,sY, pX-1, pY)
+            else:
+                sX = "_" + sX
+                sY = copy.deepcopy(self.query_y[pY-1]) + sY
+                self.search_near(sX,sY, pX, pY-1)
 
-main()
+
+
+
+
+    def back_track(self):
+        pX = len(self.query_x)
+        pY = len(self.query_y)
+
+        sX = ""
+        sY = ""
+
+        self.search_near(sX,sY,pX,pY)
