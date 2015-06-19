@@ -103,10 +103,10 @@ class c_table:
 
 
     def search_near(self, sX, sY, pX, pY):
-        print "second V"
-        print self.testT[pX][pY]
-        print self.query_x[pX-1]
-        print self.query_y[pY-1]
+#        print "second V"
+#        print self.testT[pX][pY]
+#        print self.query_x[pX-1]
+#        print self.query_y[pY-1]
 
 #        print len(sX), len(sY)
         if( pX == 0) and (pY == 0 ):
