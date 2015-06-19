@@ -1,5 +1,7 @@
 __author__ = 'KyungTaek'
 import sys, copy
+from local_alignment import l_table
+
 
 class c_table:
     def __init__(self, X, Y,UP,LEFT,DIA):
@@ -103,10 +105,10 @@ class c_table:
 
 
     def search_near(self, sX, sY, pX, pY):
-        print "second V"
-        print self.testT[pX][pY]
-        print self.query_x[pX-1]
-        print self.query_y[pY-1]
+#        print "second V"
+#        print self.testT[pX][pY]
+#        print self.query_x[pX-1]
+#        print self.query_y[pY-1]
 
 #        print len(sX), len(sY)
         if( pX == 0) and (pY == 0 ):
@@ -157,25 +159,30 @@ class c_table:
 
 
 def main():
-    qX = raw_input("str1 : ")
-    qY = raw_input("str2 : ")
-    qU = raw_input("delete penalty: ")
-    qL = raw_input("insert penalty: ")
-    qD = raw_input("substitute penalty: ")
+    print("## Minimum Edit Distance ##")
+    qX = raw_input("str1 (defualt = \"BESTOFTIMES\"): ") or "BESTOFTIMES"
+    qY = raw_input("str2 (defualt = \"SOFTEN\": ") or "SOFTEN"
+    qU = raw_input("delete penalty(defualt = 1): ") or 1
+    qL = raw_input("insert penalty(defualt = 1): ") or 1
+    qD = raw_input("substitute penalty(defualt = 2): ") or 2
 
     print qX, qY, qU, qL, qD
 
     one = c_table(qX,qY,qU,qL,qD)
-
-#    print one.query_x, one.query_y
-
     one.make_init_T()
-#    print one.showT()
     one.mark()
     print one.showT()
-
     T = one.back_track()
     print T
+
+    print("## Minimum Local Edit Distance ##")
+    qg = raw_input("\n\ngap penalty(default = -7): ") or -7
+    qm = raw_input("match score(default = 10): ") or 10
+    qmi = raw_input("mismatch penalty(default = -5): ") or -5
+    two = l_table(qX,qY,qg,qm,qmi)
+    optloc = (0,0)
+    optloc= two.local_align()
+    two.back_track(optloc[0], optloc[1])
 
 main()
 
